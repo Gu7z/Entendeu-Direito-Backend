@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
     secure: false,
     requireTLS: true,
     auth:{
-        user: process.env.USER,
+        user: process.env.EMAIL,
         pass: process.env.PASS
     }
 })
@@ -67,9 +67,8 @@ async function sendConfirmEmail(email, token){
         from: 'gustavoferri13@gmail.com',
         to: email,
         subject: 'Confirmation',
-        html: `<h1> <a href="http://localhost:3001/validation/${token}" > Para confirmar o email clique aqui </a> </h1>`
-    };
-    
+        html: `<h1> <a href="http://localhost:3001/validation/${token}" > Para confirmar o seu email clique aqui </a> </h1>`
+    };    
     return await transporter.sendMail(mailOptions)
 }
 
@@ -95,7 +94,7 @@ app.get('/', (req, res)=>{
 app.get('/validation/:token', async (req, res)=>{
     const verify = jwt.verify(req.params.token, api_secret)
     await Users.updateOne({email: verify.email}, {$set: {confirmed: true}})
-    res.send('ok')
+    res.send('Já pode logar no site :D')
     res.end()
 })
 
@@ -130,6 +129,8 @@ app.post('/create', async (req, res)=>{
     
     if(isValid === true){
 
+        let problem = false
+
         await existInDb({ email }) ? res.sendStatus(409) : (async ()=>{
             var new_body = await hashingpassword({email, password})
             new_body.confirmed = false
@@ -137,10 +138,11 @@ app.post('/create', async (req, res)=>{
             try{
                 await sendConfirmEmail(new_body.email, token) 
                 await Users.create(new_body)
-            }catch{
-                res.send(502)
+            }catch(error){
+                console.log(error)
+                problem = 502
             }
-        })().then(res.sendStatus(200))
+        })().then(problem ? res.sendStatus(502) : res.sendStatus(200) )
          
     }else{
         res.sendStatus(401)

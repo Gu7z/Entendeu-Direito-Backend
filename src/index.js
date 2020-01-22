@@ -67,7 +67,7 @@ async function sendConfirmEmail(email, token){
         from: 'gustavoferri13@gmail.com',
         to: email,
         subject: 'Confirmation',
-        html: `<h1> <a href="http://localhost:3001/validation/${token}" > Para confirmar o seu email clique aqui </a> </h1>`
+        html: `<h1> <a href="https://entendeuback.herokuapp.com/validation/${token}" > Para confirmar o seu email clique aqui </a> </h1>`
     };    
     return await transporter.sendMail(mailOptions)
 }

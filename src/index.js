@@ -13,7 +13,7 @@ const nodemailer = require('nodemailer')
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
+    port: 465,
     secure: false,
     requireTLS: true,
     auth:{
@@ -158,4 +158,4 @@ app.post('/', (req, res)=>{
     res.end()
 })
 
-app.listen( process.env.PORT, ()=>{console.log('Server rodando na porta', process.env.PORT)}) 
+app.listen( process.env.PORT || 8080) 
